@@ -1,4 +1,5 @@
 import click
+import os
 from sync_conflict import utils
 
 
@@ -21,11 +22,33 @@ def find_conflict(path):
     conflicted_files = utils.get_sync_conflict_files(files)
     if len(conflicted_files) > 0:
         for file in conflicted_files:
-            print(file)
+            click.echo(file)
+
+    # display total number of conflict file
+    click.echo(str(len(conflicted_files)) + ' conflict file')
+
+
+@click.command()
+@click.argument('path')
+def resolve(path):
+    """ Automatically resolve conflict between file """
+    click.echo('Resolve files')
+
+    # get all files path
+    files = utils.index_all_files(path)
+    click.echo(str(len(files)) + ' files indexed')
+
+    # get all conflict file
+    conflicted_files = utils.get_sync_conflict_files(files)
+
+    # display all conflict file
+    if len(conflicted_files) > 0:
+        for file in conflicted_files:
+            utils.resolve_conflict(file)
 
     # display total number of conflict file
     click.echo(str(len(conflicted_files)) + ' conflict file')
 
 
 cli.add_command(find_conflict)
-
+cli.add_command(resolve)
