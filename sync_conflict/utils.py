@@ -23,46 +23,44 @@ def get_stat_dict(file_path):
     data = {}
 
     stat = os.stat(file_path)
-    data['size'] = stat['st_size']
-    data['creation_date'] = stat['st_ctime']
-    data['modified_date'] = stat['st_mtime']
-    data['last_access_date'] = stat['st_atime']
+    data['size'] = stat.st_size
+    data['creation_date'] = stat.st_ctime
+    data['modified_date'] = stat.st_mtime
+    data['last_access_date'] = stat.st_atime
 
     return data
 
 
+def get_file_name(file_path):
+    conflict_name = os.path.basename(file_path)
+
+    name_split = conflict_name.split('.')
+    original_name = ''
+    for string in name_split:
+        if not 'sync-conflict' in string:
+            original_name += string + '.'
+    original_name = original_name[:-1]
+    return original_name, conflict_name
+
+
 
 def resolve_conflict(conflict_file_path):
-    conflict_file = {}
-    original_file = {}
+    # get file name of conflict file & original file
+    original_name, conflict_name = get_file_name(conflict_file_path)
 
-    # get dir path
-    path = os.path.split(conflict_file_path)
+    # get directory of conflict file location
+    dir_path = conflict_file_path.replace(conflict_name, '')
 
-    dir_path = ''
-    for i in range(len(path) - 1):
-        dir_path = os.path.join(dir_path, path[i])
+    # get metadata of files
+    original = get_stat_dict(os.path.join(dir_path, original_name))
+    original['name'] = original_name
+    conflict = get_stat_dict(os.path.join(conflict_file_path))
+    conflict['name'] = conflict_name
 
-    # get conflict file name (remove dir path)
-    conflict_file['name'] = path[-1]
+    # resolve conflict
+    # 
 
-    # get original file name 
-    split_name = conflict_file['name'].split('.')
-    del split_name[len(split_name) - 2]
-    name = ''
-    for i in split_name:
-        name += i + '.'
-    original_file['name'] = name[:-1]
-
-    # dictionnary for file stat
-
-    # name: name
-    # size (kb): st_size in bytes
-    # creation_date : st_ctime
-    # modified date: st_mtime
-    # last access date: st_atime
-
-
-    print(os.stat(os.path.join(dir_path, conflict_file['name'])))
-    print(os.stat(os.path.join(dir_path, original_file['name'])))
-    print('\n')
+    if conflict['size'] < original['size'] and conflict['modified_date'] < original['modified_date']:
+        print('del', conflict['name'])
+    else:
+        print('could not resolve', conflict['name'])
