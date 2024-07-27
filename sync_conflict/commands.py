@@ -47,7 +47,7 @@ def resolve(path):
             utils.resolve_conflict(file)
 
     # display total number of conflict file
-    click.echo(str(len(conflicted_files)) + ' conflict file')
+    click.echo(str(len(conflicted_files)) + ' conflict')
 
 
 cli.add_command(find_conflict)
