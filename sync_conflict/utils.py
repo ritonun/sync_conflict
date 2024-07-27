@@ -1,4 +1,13 @@
 import os
+import sys
+import click
+
+
+def check_folder_exist(path):
+    if not os.path.isdir(path):
+        click.echo(f'The path "{path}" is not a folder or does not exist.')
+        sys.exit(0)
+    return True
 
 
 def index_all_files(folder_path):
