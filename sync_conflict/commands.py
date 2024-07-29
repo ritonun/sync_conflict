@@ -48,9 +48,12 @@ def resolve(path):
     conflicted_files = utils.get_sync_conflict_files(files)
 
     # display all conflict file
+    total_solved = 0
     if len(conflicted_files) > 0:
         for file in conflicted_files:
-            utils.resolve_conflict(file)
+            if utils.resolve_conflict(file):
+                total_solved += 1
+    click.echo(f'{total_solved}/{len(conflicted_files)} conflict solved.')
 
     # display total number of conflict file
     click.echo(str(len(conflicted_files)) + ' conflict')

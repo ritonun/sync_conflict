@@ -1,5 +1,6 @@
 import os
 import sys
+from datetime import datetime
 import click
 
 
@@ -54,6 +55,10 @@ def get_file_name(file_path):
 
 
 def resolve_conflict(conflict_file_path):
+    # FOR DEV ONLY, REMOVE
+    if 'sync_conflict' in conflict_file_path:
+        return False
+
     # get file name of conflict file & original file
     original_name, conflict_name = get_file_name(conflict_file_path)
 
@@ -69,7 +74,15 @@ def resolve_conflict(conflict_file_path):
     # resolve conflict
     # 
 
+    print('--- --- ---')
+    print('ORIGINAL | CONFLICT')
+    print(datetime.utcfromtimestamp(original['modified_date']),'|',
+          datetime.utcfromtimestamp(conflict['modified_date']))
+    print(original['size'], '|', conflict['size'])
+
     if conflict['size'] < original['size'] and conflict['modified_date'] < original['modified_date']:
         print('del', conflict['name'])
+        return True
     else:
         print('could not resolve', conflict['name'])
+        return False
