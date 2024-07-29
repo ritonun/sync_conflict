@@ -75,27 +75,30 @@ def resolve_conflict(conflict_file_path):
     # resolve conflict
     # 
 
-    print('--- --- ---')
-    print('ORIGINAL | CONFLICT')
-    print(datetime.utcfromtimestamp(original['modified_date']),'|',
-          datetime.utcfromtimestamp(conflict['modified_date']))
-    print(original['size'], '|', conflict['size'])
-
     if conflict['size'] < original['size'] and conflict['modified_date'] < original['modified_date']:
-        print('del', conflict['name'])
+        os.remove(conflict_file_path)
+        click.echo(f'Removed "{conflict_name}" in "{dir_path}"')
         return True
     else:
-        print('could not resolve', conflict['name'])
+        click.echo(f'Could not solve conflict for "{conflict_file_path}"')
+        datetime_string = str(datetime.utcfromtimestamp(original['modified_date']))
+        datetime_string += ' (original)|(conflict) '
+        datetime_string += str(datetime.utcfromtimestamp(conflict['modified_date']))
+        click.echo(datetime_string)
+        size_string = str(original['size']) + ' (original)|(conflict) ' + str(conflict['size'])
+        click.echo(size_string)
+        click.echo('---')
         return False
 
 
 def open_file_explorer(path):
+    """Open file explroer at the specified path """
     path = os.path.dirname(os.path.abspath(path))
-    if sys.platform == "win32":
+    if sys.platform == "win32": # windows
         os.startfile(path)
     else:
-        if sys.platform == "darwin":
+        if sys.platform == "darwin":    # mac
             opener = "open"
         else:
-            opener = "xdg-open"
+            opener = "xdg-open" # unix
         subprocess.Popen([opener, path])
