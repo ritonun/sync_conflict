@@ -59,5 +59,28 @@ def resolve(path):
     click.echo(str(len(conflicted_files)) + ' conflict')
 
 
+@click.command()
+@click.argument('path')
+def walk(path):
+    # verify path input by user
+    utils.check_folder_exist(path)
+
+    # get all files path
+    files = utils.index_all_files(path)
+    click.echo(str(len(files)) + ' files indexed')
+
+    # get all conflict file
+    conflicted_files = utils.get_sync_conflict_files(files)
+    click.echo(str(len(conflicted_files)) + ' conflict')
+
+    # open file explorer for each file
+    for conflict_file in conflicted_files:
+        if click.confirm(f'Open "{conflict_file}" ?'):
+            utils.open_file_explorer(conflict_file)
+        else:
+            click.echo('Skipped.')
+
+
 cli.add_command(find_conflict)
 cli.add_command(resolve)
+cli.add_command(walk)

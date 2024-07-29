@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 from datetime import datetime
 import click
 
@@ -86,3 +87,15 @@ def resolve_conflict(conflict_file_path):
     else:
         print('could not resolve', conflict['name'])
         return False
+
+
+def open_file_explorer(path):
+    path = os.path.dirname(os.path.abspath(path))
+    if sys.platform == "win32":
+        os.startfile(path)
+    else:
+        if sys.platform == "darwin":
+            opener = "open"
+        else:
+            opener = "xdg-open"
+        subprocess.Popen([opener, path])
