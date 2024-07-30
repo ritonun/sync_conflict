@@ -47,6 +47,9 @@ def resolve(path):
     # get all conflict file
     conflicted_files = utils.get_sync_conflict_files(files)
 
+    # display total number of conflict file
+    click.echo(str(len(conflicted_files)) + ' conflict')
+
     # display all conflict file
     total_solved = 0
     if len(conflicted_files) > 0:
@@ -54,9 +57,6 @@ def resolve(path):
             if utils.resolve_conflict(file):
                 total_solved += 1
     click.echo(f'{total_solved}/{len(conflicted_files)} conflict solved.')
-
-    # display total number of conflict file
-    click.echo(str(len(conflicted_files)) + ' conflict')
 
 
 @click.command()
@@ -81,6 +81,27 @@ def walk(path):
             click.echo('Skipped.')
 
 
+@click.command()
+@click.argument('path')
+def delete(path):
+    # verify path input by user
+    utils.check_folder_exist(path)
+
+    # get all files path
+    files = utils.index_all_files(path)
+    click.echo(str(len(files)) + ' files indexed')
+
+    # get all conflict file
+    conflicted_files = utils.get_sync_conflict_files(files)
+    click.echo(str(len(conflicted_files)) + ' conflict')
+
+    # delete all files
+    for conflict_file in conflicted_files:
+        os.remove(conflict_file)
+        click.echo(f'Removed "{conflict_file}"')
+
+
 cli.add_command(find_conflict)
 cli.add_command(resolve)
 cli.add_command(walk)
+cli.add_command(delete)

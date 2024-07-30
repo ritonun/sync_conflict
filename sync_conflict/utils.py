@@ -56,8 +56,10 @@ def get_file_name(file_path):
 
 
 def resolve_conflict(conflict_file_path):
-    # FOR DEV ONLY, REMOVE
+    # if sync_conflict is folder name, skip
     if 'sync_conflict' in conflict_file_path:
+        click.echo(f'The file {conflict_file_path} can not be resolve.')
+        click.echo('A folder name contain "sync_conflict", please rename the folder.')
         return False
 
     # get file name of conflict file & original file
